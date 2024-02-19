@@ -41,6 +41,7 @@
 // export default App;
 
 import React, { useRef, useEffect, useState } from "react";
+import "./App.css"; // Import your CSS file if you have one
 
 function App() {
   const videoRef = useRef(null);
@@ -56,6 +57,10 @@ function App() {
         video.addEventListener('loadedmetadata', () => {
           video.play();
         });
+
+        video.addEventListener('loadeddata', () => {
+          // Video has loaded enough data for the first frame
+        });
       })
       .catch(err => {
         console.error(err);
@@ -67,8 +72,17 @@ function App() {
     let photo = photoRef.current;
     const context = photo.getContext("2d");
 
-    context.drawImage(video, 0, 0, 1920, 1080);
-    setHasPhoto(true);
+    // Check if the video has loaded enough data for the first frame
+    if (video.readyState >= 2) { // 2 corresponds to HAVE_CURRENT_DATA
+      // Set canvas dimensions to match video dimensions
+      photo.width = video.videoWidth;
+      photo.height = video.videoHeight;
+
+      context.drawImage(video, 0, 0, video.videoWidth-5, video.videoHeight-5);
+      setHasPhoto(true);
+    } else {
+      console.log('Video is not ready yet. Try again.');
+    }
   };
 
   const closePhoto = () => {
@@ -87,7 +101,9 @@ function App() {
       </div>
       <div className={`result ${hasPhoto ? 'hasPhoto' : ''}`}>
         <canvas ref={photoRef}></canvas>
-        <button onClick={closePhoto}>Close</button>
+        {hasPhoto && (
+          <button className="closeButton" onClick={closePhoto}>Close</button>
+        )}
       </div>
     </div>
   );
