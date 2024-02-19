@@ -78,11 +78,19 @@ function App() {
       photo.width = video.videoWidth;
       photo.height = video.videoHeight;
 
-      context.drawImage(video, 0, 0, video.videoWidth-5, video.videoHeight-5);
+      context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
       setHasPhoto(true);
     } else {
       console.log('Video is not ready yet. Try again.');
     }
+  };
+
+  const savePhoto = () => {
+    let photo = photoRef.current.toDataURL("image/png");
+    let link = document.createElement("a");
+    link.href = photo;
+    link.download = "captured_photo.png";
+    link.click();
   };
 
   const closePhoto = () => {
@@ -102,7 +110,10 @@ function App() {
       <div className={`result ${hasPhoto ? 'hasPhoto' : ''}`}>
         <canvas ref={photoRef}></canvas>
         {hasPhoto && (
-          <button className="closeButton" onClick={closePhoto}>Close</button>
+          <div>
+            <button className="closeButton" onClick={closePhoto}>Close</button>
+            <button className="saveButton" onClick={savePhoto}>Save</button>
+          </div>
         )}
       </div>
     </div>
