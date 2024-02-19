@@ -52,7 +52,10 @@ function App() {
       .then(stream => {
         let video = videoRef.current;
         video.srcObject = stream;
-        video.play();
+
+        video.addEventListener('loadedmetadata', () => {
+          video.play();
+        });
       })
       .catch(err => {
         console.error(err);
